@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
-
+#to plot for multiple days
 
 def extract_data(dat):
     """read the excel file and extract out the amr and time cols"""
@@ -11,7 +11,7 @@ def extract_data(dat):
     amr = dat['AMR']
     time = dat['Time']
     
-    return time, amr
+    return amr, time
 
 def remove_duplicates(nars_data,nars_time):
     ndf = pd.DataFrame(columns = ['AMR','Opened','Closed','Timestamp','Time'])
@@ -202,70 +202,64 @@ def saveNewData(ndata, path):
 
     
 def plot_gallery(t1,r1,r2):
-    plt.xlabel("Time ->")
-    plt.title("flow rate vs Time")
+    plt.xlabel("Time(min) ->")
+    plt.title("flow rate vs Time - 3days")
     plt.ylabel("Flow rate")
     #plt.grid(True)"""
     """
     slope1,coefficient1 = np.polyfit(nor_time,nar_amr,1)
     slope2,coefficient2 = np.polyfit(nor_time,tun_amr,1)
     """
-    plt.plot(t1,r1,"b", label = "Narsaparum")
-    plt.plot(t1,r2,"r", label = "Tunivalasa")
+    plt.plot(t1,r1,"r", label = "Tunivalasa")
+    plt.plot(t1,r2,"b", label = "Narshapuram")
     plt.legend(loc = 'upper left')
     #plt.show()
-    plt.savefig("flowt.pdf")
+    plt.savefig("Tun_Nars_3days.pdf")
     
 def flow_rate(amr):
     fr = []
-    for i in range(0,1440):
-        if i+10 < 1440:
-            diff = (amr[i+10]-amr[i])/10
-            fr.append(diff)
-        else:
-            fr.append(fr[i-1])
+    k=0
+    for i in range(0,3):
+        for j in range(0,1440):
+            if k+10 < 1440*(i+1):
+                diff = (amr[k+10]-amr[k])/10
+                fr.append(diff)
+            else:
+                fr.append(fr[k-1])
+            k+=1
     return fr
     
 #def no_to_time()    
 
-dat_nars = pd.read_excel(r"G:\PS1\NSP_OHSR.xlsx")
-dat_tun = pd.read_excel(r"G:\PS1\Tunivalasa.xlsx")
-#dropping columns not required
-to_drop = ['PLC','Site','Capacity','HM']
-dat_nars.drop(to_drop,inplace=True,axis=1)
-dat_tun.drop(to_drop,inplace=True,axis=1)
+df1 = pd.read_csv(r"G:\PS1\normalized_amr_tun20.csv")
+df2 = pd.read_csv(r"G:\PS1\normalized_amr_tun21.csv")
+df3 = pd.read_csv(r"G:\PS1\normalized_amr_tun22.csv")
+df4 = pd.read_csv(r"G:\PS1\normalized_amr_nars20.csv")
+df5 = pd.read_csv(r"G:\PS1\normalized_amr_nars21.csv")
+df6 = pd.read_csv(r"G:\PS1\normalized_amr_nars22.csv")
 
-nars_time,nars_amr = extract_data(dat_nars)
-tun_time,tun_amr = extract_data(dat_tun)
+frames1 = [df1, df2, df3]
+frames2 = [df4, df5, df6]
 
-"""call for cleaning the data;commented as clean data already received
-No need to save every time program is ran"""
+result1 = pd.concat(frames1)
+result2 = pd.concat(frames2)
+list_dn1 = result1['AMR'].tolist()
+list_dn2 = result2['AMR'].tolist()
 
-new_data_nars = remove_duplicates(dat_nars,nars_time)
-new_data_tun = remove_duplicates(dat_tun,tun_time)
+time_num = [i for i in range(1,len(result1)+1)]
 
-#saveNewData(new_data_nars,r"G:\PS1\clean_data_nars.csv")
-#saveNewData(new_data_tun,r"G:\PS1\clean_data_tun.csv")
-new_nars_time, new_nars_amr = extract_data(new_data_nars)
-new_tun_time, new_tun_amr = extract_data(new_data_tun)
-#new_nars_time = new_nars_time.reindex(ind1)
-#new_nars_time = new_nars_time.rename(lambda x: x)
-#new_tun_time = new_tun_time.reindex(ind2)
-#"""
-normalized_dn, normalized_dt, normalized_time = normalize_mod(new_nars_time, new_tun_time, new_data_nars,new_data_tun)
-df_norm_time = pd.DataFrame({'Time':normalized_time})#normalzd_time is a list
-#"""
-"""saving the dataframes into csv files
-saveNewData(normalized_dn,r"G:\PS1\normalized_amr_nars.csv")
-saveNewData(normalized_dt,r"G:\PS1\normalized_amr_tun.csv")
-saveNewData(df_norm_time,r"G:\PS1\normalized_time.csv")
-"""
-#"""
-list_dn = normalized_dn['AMR'].tolist()
-list_dt = normalized_dt['AMR'].tolist()
-time_num = [i for i in range(1,len(df_norm_time)+1)]
+fr1 = flow_rate(list_dn1)
+fr2 = flow_rate(list_dn2)
 
-fr1 = flow_rate(list_dn)
-fr2 = flow_rate(list_dt)
 #plot_gallery(time_num,list_dn,list_dt)
 plot_gallery(time_num,fr1,fr2)
+#max flow rate of Nars - 2.7 - 22
+#max flow rate of Tun - 5.6 - 22
+#max flow rate of Nars - 2.8 - 20
+#max flow rate of Tun - 5.8 - 20
+#max flow rate of Nars - 5.0 - 21
+#max flow rate of Tun - 5.6 - 21
+
+#day1 - 0-1440
+#day2 - 1440 - 2880
+#day3 - 2880 - 4320
