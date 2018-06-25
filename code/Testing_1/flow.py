@@ -9,7 +9,9 @@ d1 = pd.read_excel(r'ml11.xlsx')
 d2 = pd.read_excel(r'ml12.xlsx')
 frames = [d1,d2]
 d1 = pd.concat(frames, ignore_index = True)
+#d1 = d1.dropna()
 test = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
+#test = test.dropna()
 #print(d1)
 
 def df_init(s):
@@ -52,10 +54,10 @@ def create_model():
     model1 = Sequential()
     model1.add(Dense(11,activation = 'sigmoid',input_dim = 21))
     #model1.add(BatchNormalization())
-    model1.add(Dense(21))#, activation = 'sigmoid'))
-    model1.add(Dense(11))
-    model1.add(Dense(19, kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
-    model1.add(Dense(21, activation = 'relu',activity_regularizer = regularizers.l1(0.02)))
+    model1.add(Dense(18, activation = 'relu'))#, activation = 'sigmoid'))
+    model1.add(Dense(11, activation = 'sigmoid'))
+    #model1.add(Dense(19,activation = 'sigmoid'))# kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
+    model1.add(Dense(21, activation = 'relu'))#,activity_regularizer = regularizers.l1(0.02)))
     #model1.add(Dropout(0.2))
     """model2 = Sequential()
     model2.add(Dense(20, activation = 'relu',input_dim = 22))
@@ -92,24 +94,35 @@ opcl1 = format_data(opcl1,'op', 0, len(d1))
 fr1 = d1.iloc[:len(d1),1]
 fr1 = format_data(fr1,'fr', 0, len(d1))
 
+fr1 = pd.DataFrame(fr1)
+x = pd.isnull(fr1).any(1).nonzero()[0]
+fr1.dropna(inplace=True)
+opcl1 = np.delete(opcl1,x,0)
+
 opcl3 = test.iloc[:len(test),0]
 opcl3 = format_data(opcl3,'op',0,len(test))
 fr3 = test.iloc[:len(test),1]
 fr3 = format_data(fr3,'fr',0,len(test))
 
-fr1 = normalize(fr1)
-fr3 = normalize(fr3)
+fr3 = pd.DataFrame(fr3)
+y = pd.isnull(fr3).any(1).nonzero()[0]
+fr3.dropna(inplace=True)
+opcl3 = np.delete(opcl3,y,0)
+
+#fr1 = normalize(fr1)
+#fr3 = normalize(fr3)
 
 model1= create_model()
 sgd = optimizers.SGD(lr=0.0004)
-model1.compile(optimizer = optimizers.Adagrad(clipnorm=1), loss = 'categorical_crossentropy', metrics = ['accuracy'])
+ada = optimizers.Adam(clipnorm=0.5,lr=0.00004)
+model1.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
-model1.fit(fr1,opcl1,batch_size = 4, epochs = 30)
+model1.fit(fr1,opcl1,batch_size = 5, epochs = 30)
 
 #model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
 #model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
 
-score1 = model1.evaluate(fr3,opcl3,batch_size = 4)
+score1 = model1.evaluate(fr3,opcl3,batch_size = 5)
 #score2 = model2.evaluate(opcl3,fr3,batch_size = 5)
 print('score1: ', score1)
 #print('score2: ', score2)
