@@ -67,8 +67,10 @@ def create_model():
 def normalize(flow):
     for i in range(0,len(flow)):
         for j in range(0,len(flow[i])):
+            print(i,j)
             if sum(flow[i]) != 0:
-                flow[i,j] = flow[i,j]/sum(flow[i])
+                flow.iloc[i,j] = flow.iloc[i,j]/sum(flow.iloc[i])
+                print('hiii')
     return flow
     
 """     
@@ -109,13 +111,13 @@ y = pd.isnull(fr3).any(1).nonzero()[0]
 fr3.dropna(inplace=True)
 opcl3 = np.delete(opcl3,y,0)
 
-#fr1 = normalize(fr1)
-#fr3 = normalize(fr3)
+fr1 = normalize(fr1)
+fr3 = normalize(fr3)
 
 model1= create_model()
 sgd = optimizers.SGD(lr=0.0004)
 ada = optimizers.Adam(clipnorm=0.5,lr=0.00004)
-model1.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
+model1.compile(optimizer = ada, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 model1.fit(fr1,opcl1,batch_size = 5, epochs = 30)
 
