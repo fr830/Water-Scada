@@ -66,11 +66,11 @@ def create_model():
 
 def normalize(flow):
     for i in range(0,len(flow)):
-        for j in range(0,len(flow[i])):
-            print(i,j)
-            if sum(flow[i]) != 0:
+        for j in range(0,len(flow.iloc[i])):
+            #print(i,j)
+            if sum(flow.iloc[i]) != 0:
                 flow.iloc[i,j] = flow.iloc[i,j]/sum(flow.iloc[i])
-                print('hiii')
+                #print('hiii')
     return flow
     
 """     
