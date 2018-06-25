@@ -3,20 +3,22 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, BatchNormalization
 from keras import optimizers
+from keras import regularizers
 
-d1 = pd.read_excel(r'ml1.xlsx')
-#d2 = pd.read_excel(r'ml12.xlsx')
-#frames = [d1,d2]
-#d1 = pd.concat(frames)
+d1 = pd.read_excel(r'ml11.xlsx')
+d2 = pd.read_excel(r'ml12.xlsx')
+frames = [d1,d2]
+d1 = pd.concat(frames, ignore_index = True)
+test = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
 #print(d1)
 
 def df_init(s):
     if s=='op':
-        cols1 = [('t'+str(i)) for i in range(1, 23) ]
+        cols1 = [('t'+str(i)) for i in range(1,22) ]
         df1 = pd.DataFrame(cols1)
         return df1
     else:
-        cols2 = [('fr1'+str(i)) for i in range(1,23)]
+        cols2 = [('fr1'+str(i)) for i in range(1,22)]
         df2 = pd.DataFrame(cols2)
         return df2
     
@@ -31,12 +33,12 @@ def str_to_num(l1):
 def format_data(dat,s, lo, hi):
     #df = df_init(s)
     #df = pd.DataFrame()#
-    nd = np.empty([len(dat),22])
+    nd = np.empty([len(dat),21])
     k=0
     for i in range(lo,hi):
-        print(i)
+        #print(i)
         #dat[i] = dat[i].to_string()
-        dat[i] = dat[i].split()
+        dat[i] = str(dat[i]).split()
         dat[i] = str_to_num(dat[i])
         #print(type(dat[i]),type(dat))
         #print(i)
@@ -48,15 +50,25 @@ def format_data(dat,s, lo, hi):
 
 def create_model():
     model1 = Sequential()
-    model1.add(Dense(11,activation = 'relu',input_dim = 22))
+    model1.add(Dense(11,activation = 'sigmoid',input_dim = 21))
     #model1.add(BatchNormalization())
-    model1.add(Dense(22, activation = 'relu'))
-    #model1.add(Dense(22, activation = 'relu'))
-    #model1.add(Dropout(0.4))
+    model1.add(Dense(21))#, activation = 'sigmoid'))
+    model1.add(Dense(11))
+    model1.add(Dense(19, kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
+    model1.add(Dense(21, activation = 'relu',activity_regularizer = regularizers.l1(0.02)))
+    #model1.add(Dropout(0.2))
     """model2 = Sequential()
     model2.add(Dense(20, activation = 'relu',input_dim = 22))
     model2.add(Dense(22, activation = 'relu'))"""
     return model1
+
+def normalize(flow):
+    for i in range(0,len(flow)):
+        for j in range(0,len(flow[i])):
+            if sum(flow[i]) != 0:
+                flow[i,j] = flow[i,j]/sum(flow[i])
+    return flow
+    
 """     
 opcl1 = d1.iloc[:int(len(d1)/3),0]
 opcl1 = format_data(opcl1,'op', 0, len(opcl1))
@@ -75,28 +87,32 @@ opcl3 = format_data(opcl3,'op', int(len(d1)/3)*2,len(d1))
 fr3 = d1.iloc[int(len(d1)/3)*2:,1]
 fr3 = format_data(fr3,'fr',int(len(d1)/3)*2,len(d1))
 """
-opcl1 = d1.iloc[:int(len(d1)/2),0]
-opcl1 = format_data(opcl1,'op', 0, int(len(d1)/2))
-fr1 = d1.iloc[:int(len(d1)/2),1]
-fr1 = format_data(fr1,'fr', 0, int(len(d1)/2))
+opcl1 = d1.iloc[:len(d1),0]
+opcl1 = format_data(opcl1,'op', 0, len(d1))
+fr1 = d1.iloc[:len(d1),1]
+fr1 = format_data(fr1,'fr', 0, len(d1))
 
-opcl3 = d1.iloc[int(len(d1)/2):,0]
-opcl3 = format_data(opcl3,'op',int(len(d1)/2),len(d1))
-fr3 = d1.iloc[int(len(d1)/2):,1]
-fr3 = format_data(fr3,'fr',int(len(d1)/2),len(d1))
+opcl3 = test.iloc[:len(test),0]
+opcl3 = format_data(opcl3,'op',0,len(test))
+fr3 = test.iloc[:len(test),1]
+fr3 = format_data(fr3,'fr',0,len(test))
+
+fr1 = normalize(fr1)
+fr3 = normalize(fr3)
 
 model1= create_model()
-sgd = optimizers.SGD(lr=0.00004)
-model1.compile(optimizer = sgd, loss = 'categorical_crossentropy', metrics = ['accuracy'])
+sgd = optimizers.SGD(lr=0.0004)
+model1.compile(optimizer = optimizers.Adagrad(clipnorm=1), loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
-model1.fit(opcl1,fr1,batch_size = 1, epochs = 107)
+model1.fit(fr1,opcl1,batch_size = 4, epochs = 30)
 
 #model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
 #model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
 
-score1 = model1.evaluate(opcl3,fr3,batch_size = 5)
+score1 = model1.evaluate(fr3,opcl3,batch_size = 4)
 #score2 = model2.evaluate(opcl3,fr3,batch_size = 5)
 print('score1: ', score1)
 #print('score2: ', score2)
-#80 % accuracy
+#92.8 % accuracy - srsr - 27 epochs
+
 
