@@ -116,7 +116,7 @@ fr3 = normalize(fr3)
 
 model1= create_model()
 sgd = optimizers.SGD(lr=0.0004)
-ada = optimizers.Adam(clipnorm=0.5,lr=0.00004)
+ada = optimizers.Adam(lr=0.004)
 model1.compile(optimizer = ada, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 model1.fit(fr1,opcl1,batch_size = 5, epochs = 30)
@@ -128,6 +128,4 @@ score1 = model1.evaluate(fr3,opcl3,batch_size = 5)
 #score2 = model2.evaluate(opcl3,fr3,batch_size = 5)
 print('score1: ', score1)
 #print('score2: ', score2)
-#92.8 % accuracy - srsr - 27 epochs
-
-
+#51% on test set srsr - 30 epochs
