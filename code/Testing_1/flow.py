@@ -57,8 +57,9 @@ def create_model():
     model1.add(Dense(18, activation = 'relu'))#, activation = 'sigmoid'))
     model1.add(Dense(11, activation = 'sigmoid'))
     #model1.add(Dense(19,activation = 'sigmoid'))# kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
-    model1.add(Dense(21, activation = 'relu'))#,activity_regularizer = regularizers.l1(0.02)))
+    model1.add(Dense(42, activation = 'relu'))#,activity_regularizer = regularizers.l1(0.02)))
     #model1.add(Dropout(0.2))
+    model1.add(Dense(21, activation = 'relu'))
     """model2 = Sequential()
     model2.add(Dense(20, activation = 'relu',input_dim = 22))
     model2.add(Dense(22, activation = 'relu'))"""
@@ -119,7 +120,7 @@ sgd = optimizers.SGD(lr=0.0004)
 ada = optimizers.Adam(lr=0.004)
 model1.compile(optimizer = ada, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
-model1.fit(fr1,opcl1,batch_size = 5, epochs = 30)
+model1.fit(fr1,opcl1,batch_size = 4, epochs = 30)
 
 #model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
 #model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
