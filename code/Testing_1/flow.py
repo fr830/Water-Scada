@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, BatchNormalization
-from keras import optimizers
-from keras import regularizers
+
+
 
 #d1 = pd.read_excel(r'ml11.xlsx')
 #d2 = pd.read_excel(r'ml12.xlsx')
@@ -53,6 +51,10 @@ def format_data(dat,s, lo, hi):
     return nd
 
 def create_model():
+    from keras.models import Sequential
+    from keras.layers import Dense#, BatchNormalization
+    #from keras import regularizers
+
     model1 = Sequential()
     model1.add(Dense(11,activation = 'sigmoid',input_dim = 21))
     #model1.add(BatchNormalization())
@@ -76,6 +78,8 @@ def normalize(flow):
     return flow
 
 def main():
+    from keras import optimizers
+    
     opcl1 = d1.iloc[:len(d1),0]
     opcl1 = format_data(opcl1,'op', 0, len(d1))
     fr1 = d1.iloc[:len(d1),1]
