@@ -25,7 +25,8 @@ X_train = pd.DataFrame(X_train)
 y = pd.isnull(X_train).any(1).nonzero()[0]
 X_train.dropna(inplace=True)
 y_train = np.delete(y_train,y,0)
-   
+
+y_train = np.log1p(y_train)
 def rmse_cv(model):
     rmse= np.sqrt(-cross_val_score(model, X_train, y_train, scoring="neg_mean_squared_error", cv = 5))
     return(rmse)
@@ -34,12 +35,12 @@ model_ridge = Ridge()
 
 #to pick the best alpha
 
-alphas = [0.05, 0.1, 0.3, 1, 3, 5, 10, 15, 30, 50, 75]
-cv_ridge = [rmse_cv(Ridge(alpha = alpha)).mean() 
-            for alpha in alphas]
+#alphas = [0.05, 0.1, 0.3, 1, 3, 5, 10, 15, 30, 50, 75]
+#cv_ridge = [rmse_cv(Ridge(alpha = alpha)).mean() 
+            #for alpha in alphas]
 
-cv_ridge = pd.Series(cv_ridge, index = alphas)
-cv_ridge.plot(title = "Validation")
+#cv_ridge = pd.Series(cv_ridge, index = alphas)
+#cv_ridge.plot(title = "Validation")
 #plt.xlabel("alpha")
 #plt.ylabel("rmse")
 model_lasso = LassoCV(alphas = [1, 0.1, 0.001, 0.0005]).fit(X_train, y_train)
@@ -50,7 +51,17 @@ print("Lasso picked " + str(sum(coef != 0)) + " variables and eliminated the oth
 
 imp_coef = pd.concat([coef.sort_values().head(10),coef.sort_values().tail(10)])
 
+#features coefficient
+
 matplotlib.rcParams['figure.figsize'] = (8.0, 10.0)
 imp_coef.plot(kind = "barh")
 plt.title("Coefficients in the Lasso Model")
-plt.savefig("Important features")
+plt.savefig("Important features.pdf")
+
+#residuals
+
+matplotlib.rcParams['figure.figsize'] = (6.0, 6.0)
+
+preds = pd.DataFrame({"preds":model_lasso.predict(X_train), "true":y_train})
+preds["residuals"] = preds["true"] - preds["preds"]
+preds.plot(x = "preds", y = "residuals",kind = "scatter")
