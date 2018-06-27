@@ -17,8 +17,9 @@ db = pd.concat(frames,ignore_index=True)
   
 fr1 = db.iloc[:len(db),1]
 fr1 = format_data(fr1,'fr', 0, len(db))
-X_train = fr1[:len(fr1),:-1]
-y_train = fr1[:len(fr1),-1]
+cols = [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+X_train = fr1[:len(fr1),cols]
+y_train = fr1[:len(fr1),2]
 
 X_train = pd.DataFrame(X_train)
 y = pd.isnull(X_train).any(1).nonzero()[0]
