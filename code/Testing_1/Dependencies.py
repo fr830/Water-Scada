@@ -5,6 +5,7 @@ import numpy as np
 from flow import str_to_num, format_data
 import matplotlib.pyplot as plt
 #import flow
+import matplotlib
 
 db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
 db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
@@ -13,7 +14,7 @@ db3 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a20.xlsx')
 db4 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
 frames = [db0,db1,db2,db3,db4]
 db = pd.concat(frames,ignore_index=True)
-
+  
 fr1 = db.iloc[:len(db),1]
 fr1 = format_data(fr1,'fr', 0, len(db))
 X_train = fr1[:len(fr1),:-1]
@@ -23,7 +24,7 @@ X_train = pd.DataFrame(X_train)
 y = pd.isnull(X_train).any(1).nonzero()[0]
 X_train.dropna(inplace=True)
 y_train = np.delete(y_train,y,0)
-    
+   
 def rmse_cv(model):
     rmse= np.sqrt(-cross_val_score(model, X_train, y_train, scoring="neg_mean_squared_error", cv = 5))
     return(rmse)
@@ -37,9 +38,18 @@ cv_ridge = [rmse_cv(Ridge(alpha = alpha)).mean()
             for alpha in alphas]
 
 cv_ridge = pd.Series(cv_ridge, index = alphas)
-cv_ridge.plot(title = "Validation - Just Do It")
-plt.xlabel("alpha")
-plt.ylabel("rmse")
+cv_ridge.plot(title = "Validation")
+#plt.xlabel("alpha")
+#plt.ylabel("rmse")
+model_lasso = LassoCV(alphas = [1, 0.1, 0.001, 0.0005]).fit(X_train, y_train)
+print(rmse_cv(model_lasso).mean())
 
+coef = pd.Series(model_lasso.coef_, index = X_train.columns)
+print("Lasso picked " + str(sum(coef != 0)) + " variables and eliminated the other " +  str(sum(coef == 0)) + " variables")
 
+imp_coef = pd.concat([coef.sort_values().head(10),coef.sort_values().tail(10)])
 
+matplotlib.rcParams['figure.figsize'] = (8.0, 10.0)
+imp_coef.plot(kind = "barh")
+plt.title("Coefficients in the Lasso Model")
+plt.savefig("Important features")
