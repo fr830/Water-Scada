@@ -14,9 +14,9 @@ frames = [db0,db1,db2,db3,db4]
 db = pd.concat(frames)
 
 fr1 = db.iloc[:len(db),1]
-fr1 = format_data(fr1,'fr', 0, len(d1))
-X_train = db.iloc[]
-
+fr1 = format_data(fr1,'fr', 0, len(db))
+X_train = fr1[:len(fr1),:-1]
+y_train = fr1[:len(fr1),-1]
 
 def rmse_cv(model):
     rmse= np.sqrt(-cross_val_score(model, X_train, y, scoring="neg_mean_squared_error", cv = 5))
