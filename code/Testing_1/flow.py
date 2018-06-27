@@ -5,12 +5,12 @@ from keras.layers import Dense, Dropout, BatchNormalization
 from keras import optimizers
 from keras import regularizers
 
-d1 = pd.read_excel(r'ml11.xlsx')
-d2 = pd.read_excel(r'ml12.xlsx')
-d3 = pd.read_excel(r'a10.xlsx')
-d4 = pd.read_excel(r'a20.xlsx')
-frames = [d1,d2,d3,d4]
-d1 = pd.concat(frames, ignore_index = True)
+#d1 = pd.read_excel(r'ml11.xlsx')
+#d2 = pd.read_excel(r'ml12.xlsx')
+#d3 = pd.read_excel(r'a10.xlsx')
+d1 = pd.read_excel(r'a20.xlsx')
+#frames = [d1,d2,d3,d4]
+#d1 = pd.concat(frames, ignore_index = True)
 #d1 = d1.dropna()
 test = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
 #test = test.dropna()
@@ -58,7 +58,7 @@ def create_model():
     #model1.add(BatchNormalization())
     model1.add(Dense(21, activation = 'relu'))#, activation = 'sigmoid'))
     model1.add(Dense(11, activation = 'sigmoid'))
-    model1.add(Dense(19,activation = 'sigmoid'))# kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
+    model1.add(Dense(11, activation = 'relu'))# kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
     model1.add(Dense(21, activation = 'relu'))#,activity_regularizer = regularizers.l1(0.02)))
     #model1.add(Dropout(0.2))
     """model2 = Sequential()
@@ -117,8 +117,8 @@ fr1 = normalize(fr1)
 fr3 = normalize(fr3)
 
 model1= create_model()
-sgd = optimizers.SGD(lr=0.0004)
-ada = optimizers.Adam(lr=0.004)
+sgd = optimizers.SGD(lr=0.04)
+ada = optimizers.Adam(lr=0.04)
 model1.compile(optimizer = sgd, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 model1.fit(fr1,opcl1,batch_size = 2, epochs = 50)
