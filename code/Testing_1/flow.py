@@ -74,7 +74,45 @@ def normalize(flow):
                 flow.iloc[i,j] = flow.iloc[i,j]/sum(flow.iloc[i])
                 #print('hiii')
     return flow
+
+def main():
+    opcl1 = d1.iloc[:len(d1),0]
+    opcl1 = format_data(opcl1,'op', 0, len(d1))
+    fr1 = d1.iloc[:len(d1),1]
+    fr1 = format_data(fr1,'fr', 0, len(d1))
+
+    fr1 = pd.DataFrame(fr1)
+    x = pd.isnull(fr1).any(1).nonzero()[0]
+    fr1.dropna(inplace=True)
+    opcl1 = np.delete(opcl1,x,0)
+
+    opcl3 = test.iloc[:len(test),0]
+    opcl3 = format_data(opcl3,'op',0,len(test))
+    fr3 = test.iloc[:len(test),1]
+    fr3 = format_data(fr3,'fr',0,len(test))
+
+    fr3 = pd.DataFrame(fr3)
+    y = pd.isnull(fr3).any(1).nonzero()[0]
+    fr3.dropna(inplace=True)
+    opcl3 = np.delete(opcl3,y,0)
+
+    fr1 = normalize(fr1)
+    fr3 = normalize(fr3)
+
+    model1= create_model()
+    sgd = optimizers.SGD(lr=0.04)
+    #ada = optimizers.Adam(lr=0.04)
+    model1.compile(optimizer = sgd, loss = 'categorical_crossentropy', metrics = ['accuracy'])
     
+    model1.fit(fr1,opcl1,batch_size = 2, epochs = 50)
+
+    #model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
+    #model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
+
+    score1 = model1.evaluate(fr3,opcl3,batch_size = 2)
+    #score2 = model2.evaluate(opcl3,fr3,batch_size = 5)
+    print('score1: ', score1)
+
 """     
 opcl1 = d1.iloc[:int(len(d1)/3),0]
 opcl1 = format_data(opcl1,'op', 0, len(opcl1))
@@ -93,41 +131,10 @@ opcl3 = format_data(opcl3,'op', int(len(d1)/3)*2,len(d1))
 fr3 = d1.iloc[int(len(d1)/3)*2:,1]
 fr3 = format_data(fr3,'fr',int(len(d1)/3)*2,len(d1))
 """
-opcl1 = d1.iloc[:len(d1),0]
-opcl1 = format_data(opcl1,'op', 0, len(d1))
-fr1 = d1.iloc[:len(d1),1]
-fr1 = format_data(fr1,'fr', 0, len(d1))
-
-fr1 = pd.DataFrame(fr1)
-x = pd.isnull(fr1).any(1).nonzero()[0]
-fr1.dropna(inplace=True)
-opcl1 = np.delete(opcl1,x,0)
-
-opcl3 = test.iloc[:len(test),0]
-opcl3 = format_data(opcl3,'op',0,len(test))
-fr3 = test.iloc[:len(test),1]
-fr3 = format_data(fr3,'fr',0,len(test))
-
-fr3 = pd.DataFrame(fr3)
-y = pd.isnull(fr3).any(1).nonzero()[0]
-fr3.dropna(inplace=True)
-opcl3 = np.delete(opcl3,y,0)
-
-fr1 = normalize(fr1)
-fr3 = normalize(fr3)
-
-model1= create_model()
-sgd = optimizers.SGD(lr=0.04)
-ada = optimizers.Adam(lr=0.04)
-model1.compile(optimizer = sgd, loss = 'categorical_crossentropy', metrics = ['accuracy'])
-
-model1.fit(fr1,opcl1,batch_size = 2, epochs = 50)
-
-#model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
-#model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
-
-score1 = model1.evaluate(fr3,opcl3,batch_size = 2)
-#score2 = model2.evaluate(opcl3,fr3,batch_size = 5)
-print('score1: ', score1)
+if __name__=="__main__":
+    main()
+else:
+    print('continue')
+    
 #print('score2: ', score2)
 #51% on test set srsr - 30 epochs

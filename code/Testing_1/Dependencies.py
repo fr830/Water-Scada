@@ -1,9 +1,9 @@
 import pandas as pd
-from sklearn.model_selection import Lasso
 from sklearn.linear_model import Ridge, RidgeCV, ElasticNet, LassoCV, LassoLarsCV
 from sklearn.model_selection import cross_val_score
 import numpy as np
-from flows.py import str_to_num, format_data
+from flow.py import str_to_num, format_data
+import matplotlib.pyplot as plt
 
 db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
 db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
@@ -30,6 +30,10 @@ alphas = [0.05, 0.1, 0.3, 1, 3, 5, 10, 15, 30, 50, 75]
 cv_ridge = [rmse_cv(Ridge(alpha = alpha)).mean() 
             for alpha in alphas]
 
+cv_ridge = pd.Series(cv_ridge, index = alphas)
+cv_ridge.plot(title = "Validation - Just Do It")
+plt.xlabel("alpha")
+plt.ylabel("rmse")
 
 
 
