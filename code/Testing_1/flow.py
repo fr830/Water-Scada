@@ -3,12 +3,12 @@ import numpy as np
 
 
 
-#d1 = pd.read_excel(r'ml11.xlsx')
-#d2 = pd.read_excel(r'ml12.xlsx')
-#d3 = pd.read_excel(r'a10.xlsx')
-d1 = pd.read_excel(r'a20.xlsx')
-#frames = [d1,d2,d3,d4]
-#d1 = pd.concat(frames, ignore_index = True)
+d1 = pd.read_excel(r'ml11.xlsx')
+d2 = pd.read_excel(r'ml12.xlsx')
+d3 = pd.read_excel(r'a10.xlsx')
+d4 = pd.read_excel(r'a20.xlsx')
+frames = [d1,d2,d3,d4]
+d1 = pd.concat(frames, ignore_index = True)
 #d1 = d1.dropna()
 test = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
 #test = test.dropna()
@@ -104,16 +104,16 @@ def main():
     fr3 = normalize(fr3)
 
     model1= create_model()
-    sgd = optimizers.SGD(lr=0.04)
+    sgd = optimizers.SGD(lr=0.0004)
     #ada = optimizers.Adam(lr=0.04)
     model1.compile(optimizer = sgd, loss = 'categorical_crossentropy', metrics = ['accuracy'])
     
-    model1.fit(fr1,opcl1,batch_size = 2, epochs = 50)
+    model1.fit(opcl1,fr1,batch_size = 4, epochs = 50)
 
     #model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
     #model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
 
-    score1 = model1.evaluate(fr3,opcl3,batch_size = 2)
+    score1 = model1.evaluate(opcl3,fr3,batch_size = 2)
     #score2 = model2.evaluate(opcl3,fr3,batch_size = 5)
     print('score1: ', score1)
 
