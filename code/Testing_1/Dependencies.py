@@ -7,19 +7,19 @@ import matplotlib.pyplot as plt
 #import flow
 import matplotlib
 
-db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
-db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
+#db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
+#db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
 db2 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
 db3 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a20.xlsx')
 db4 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
-frames = [db0,db1,db2,db3,db4]
+frames = [db2,db3,db4]
 db = pd.concat(frames,ignore_index=True)
   
 fr1 = db.iloc[:len(db),1]
 fr1 = format_data(fr1,'fr', 0, len(db))
-cols = [0,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+cols = [0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 X_train = fr1[:len(fr1),cols]
-y_train = fr1[:len(fr1),2]
+y_train = fr1[:len(fr1),5]
 
 X_train = pd.DataFrame(X_train)
 y = pd.isnull(X_train).any(1).nonzero()[0]
@@ -65,3 +65,4 @@ matplotlib.rcParams['figure.figsize'] = (6.0, 6.0)
 preds = pd.DataFrame({"preds":model_lasso.predict(X_train), "true":y_train})
 preds["residuals"] = preds["true"] - preds["preds"]
 preds.plot(x = "preds", y = "residuals",kind = "scatter")
+plt.savefig("Residuals.pdf")
