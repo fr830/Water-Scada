@@ -61,7 +61,7 @@ def main(cols, i):
     imp_coef.plot(kind = "barh")
     plt.title("Coefficients in the Lasso Model")
     plt.savefig("Important features"+str(i)+".pdf")
-
+    plt.show('off')
     #residuals
     
     matplotlib.rcParams['figure.figsize'] = (6.0, 6.0)
@@ -72,5 +72,8 @@ def main(cols, i):
     plt.savefig("Residuals"+str(i)+".pdf")
     
 cols = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+temp = cols
 for i in range(0,len(cols)):
-    
+    temp = np.delete(temp,i,0)
+    main(temp, i)
+    temp = cols
