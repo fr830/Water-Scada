@@ -52,17 +52,18 @@ def format_data(dat,s, lo, hi):
 
 def create_model():
     from keras.models import Sequential
-    from keras.layers import Dense#, BatchNormalization
+    from keras.layers import Dense#, Dropout#, BatchNormalization
     #from keras import regularizers
 
     model1 = Sequential()
     model1.add(Dense(11,activation = 'sigmoid',input_dim = 21))
     #model1.add(BatchNormalization())
     model1.add(Dense(21, activation = 'relu'))#, activation = 'sigmoid'))
-    model1.add(Dense(11, activation = 'sigmoid'))
-    model1.add(Dense(11, activation = 'relu'))# kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
-    model1.add(Dense(21, activation = 'relu'))#,activity_regularizer = regularizers.l1(0.02)))
     #model1.add(Dropout(0.2))
+    model1.add(Dense(11, activation = 'sigmoid'))
+    #model1.add(Dense(21, activation = 'relu'))# kernel_regularizer = regularizers.l1(0.02),bias_regularizer = regularizers.l1(0.01)))
+    model1.add(Dense(21, activation = 'relu'))#,activity_regularizer = regularizers.l1(0.02)))
+    #
     """model2 = Sequential()
     model2.add(Dense(20, activation = 'relu',input_dim = 22))
     model2.add(Dense(22, activation = 'relu'))"""
@@ -104,11 +105,11 @@ def main():
     fr3 = normalize(fr3)
 
     model1= create_model()
-    sgd = optimizers.SGD(lr=0.0004)
+    #sgd = optimizers.SGD(lr=0.0024)
     #ada = optimizers.Adam(lr=0.04)
-    model1.compile(optimizer = sgd, loss = 'categorical_crossentropy', metrics = ['accuracy'])
+    model1.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
     
-    model1.fit(opcl1,fr1,batch_size = 4, epochs = 50)
+    model1.fit(opcl1,fr1,batch_size = 2, epochs = 50)
 
     #model2.compile(optimizer = optimizers.rmsprop(lr = 0.12), loss = 'categorical_crossentropy', metrics = ['accuracy'])
     #model2.fit(opcl2,fr2,batch_size = 5, epochs = 25)
@@ -136,7 +137,8 @@ fr3 = d1.iloc[int(len(d1)/3)*2:,1]
 fr3 = format_data(fr3,'fr',int(len(d1)/3)*2,len(d1))
 """
 if __name__=="__main__":
-    main()
+    model1 = main()
+    print(model1)
 else:
     print('continue')
     
