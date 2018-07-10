@@ -31,10 +31,13 @@ def rmse_cv(model, X_train, y_train):
 
 def main(cols, i):
     print(i)
+   # print(cols)
     X_train = fr1[:len(fr1),cols]
     if np.isnan(X_train).any():
+        print("done removing")
         z = list(map(tuple, np.where(np.isnan(X_train))))
         X_train[z[0],z[1]] = 0.0
+        
     y_train = fr1[:len(fr1),i]
     #X_train is the train data, y_train is the target
     X_train = pd.DataFrame(X_train)
