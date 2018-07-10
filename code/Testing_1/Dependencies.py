@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.linear_model import Ridge, RidgeCV, ElasticNet, LassoCV, LassoLarsCV
+from sklearn.linear_model import Ridge, RidgeCV, LassoCV
 from sklearn.model_selection import cross_val_score
 import numpy as np
 from flow import str_to_num, format_data
@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 #import flow
 import matplotlib
 
-#db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
-#db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
-db2 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
-db3 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a20.xlsx')
-db4 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
+db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
+db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
+#db2 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
+#db3 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a20.xlsx')
+#db4 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
 
 #concatenating the 3 datasheets
-frames = [db2,db3,db4]
+frames = [db0,db1]
 db = pd.concat(frames,ignore_index=True)
 
 
@@ -30,7 +30,11 @@ def rmse_cv(model, X_train, y_train):
 
 
 def main(cols, i):
+    print(i)
     X_train = fr1[:len(fr1),cols]
+    if np.isnan(X_train).any():
+        z = list(map(tuple, np.where(np.isnan(X_train))))
+        X_train[z[0],z[1]] = 0.0
     y_train = fr1[:len(fr1),i]
     #X_train is the train data, y_train is the target
     X_train = pd.DataFrame(X_train)
@@ -74,10 +78,10 @@ def main(cols, i):
     
     matplotlib.rcParams['figure.figsize'] = (6.0, 6.0)
 
-    preds = pd.DataFrame({"preds":model_lasso.predict(X_train), "true":y_train})
-    preds["residuals"] = preds["true"] - preds["preds"]
-    preds.plot(x = "preds", y = "residuals",kind = "scatter")
-    plt.savefig("Residuals"+str(i)+".pdf")
+    #preds = pd.DataFrame({"preds":model_lasso.predict(X_train), "true":y_train})
+    #preds["residuals"] = preds["true"] - preds["preds"]
+    #preds.plot(x = "preds", y = "residuals",kind = "scatter")
+    #plt.savefig("Residuals"+str(i)+".pdf")
     
 #taking out a specific column everytime and finding the effect of other tanks on this
 cols = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
