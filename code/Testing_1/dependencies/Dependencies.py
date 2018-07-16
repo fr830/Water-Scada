@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 #import flow
 import matplotlib
 
-db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
+#db0 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml11.xlsx')
 db1 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\ml12.xlsx')
-#db2 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
-#db3 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a20.xlsx')
-#db4 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
+db2 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a10.xlsx')
+db3 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a20.xlsx')
+db4 = pd.read_excel(r'G:\Water_Skada\code\Testing_1\a30.xlsx')
 
 #concatenating the 3 datasheets
-frames = [db0,db1]
+frames = [db1,db2,db3,db4]
 db = pd.concat(frames,ignore_index=True)
 
 
@@ -33,6 +33,7 @@ def main(cols, i):
     print(i)
    # print(cols)
     X_train = fr1[:len(fr1),cols]
+    
     if np.isnan(X_train).any():
         print("done removing")
         z = list(map(tuple, np.where(np.isnan(X_train))))
@@ -92,4 +93,5 @@ temp = cols
 for i in range(0,len(cols)):
     temp = np.delete(temp,i,0)
     main(temp, i)
+    print(temp)
     temp = cols
